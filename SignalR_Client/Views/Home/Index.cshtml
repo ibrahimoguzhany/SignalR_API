@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section Scripts
+{
+    <script src="https://unpkg.com/@@aspnet/signalr@@1.0.0-rc1-final/dist/browser/signalr.js"></script>
+@*<script src="~/lib/microsoft/signalr/dist/browser/signalr.js></script>*@
+
+
+
+<script type="text/javascript">
+
+   $(document).ready(() => {
+        var connection = new signalR.HubConnectionBuilder().withUrl("https://localhost:7058/MyHub").build();
+        console.log(connection);
+
+    $('#connStatus').text(connection.connection.connectionState);
+
+    connection.start().then(() => {
+         $('#connStatus').text(connection.connection.connectionState);
+    }).catch((err) => { console.log(err); });
+
+    $('#btnNameSave').click(() => {
+        connection.invoke("SendName", $('#txtName').val()).catch((err) => {console.log(err)});
+    });
+
+    connection.on("GetNames", (names => {
+        console.log(names);
+    }));
+
+
+   });
+
+
+</script>
+}
+
+<div class"row">
+    <div class="col-md-8 offset-2">
+        <input class="form-control" type="text" id="txtName" />
+        <hr />
+
+        <button class="btn-primary" id="btnNameSave">Isim Kaydet</button>
+        <div class="alert alert-info">
+            Baglanti Durumu: <strong id="connStatus"></strong>
+        </div>
+    </div>
+</div>
